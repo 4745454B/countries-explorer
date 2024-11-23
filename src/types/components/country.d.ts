@@ -1,4 +1,4 @@
-export type Country = {
+export type TCountry = {
   name: string;
   capital: string;
   continent: {

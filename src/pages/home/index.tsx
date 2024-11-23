@@ -7,7 +7,12 @@ import { useQuery, gql } from "@apollo/client";
 /**
  * Types
  */
-import { Country, Language } from "../../types";
+import { TCountry, TLanguage, TFilters } from "../../types";
+
+/**
+ * Enums
+ */
+import { ESort } from "../../enums";
 
 const GET_COUNTRIES = gql`
   query GetCountries {
@@ -30,31 +35,36 @@ const GET_COUNTRIES = gql`
 
 export default function Home() {
   const { loading, error, data } = useQuery(GET_COUNTRIES);
-  const [countries, setCountries] = useState([] as Country[]);
+  const [countries, setCountries] = useState([] as TCountry[]);
   const [languages, setLanguages] = useState([] as string[]);
   const [continents, setContinents] = useState([] as string[]);
+  const [filters, setFilters] = useState({
+    continent: "" as string,
+    language: "" as string,
+    sort: ESort.DEFAULT as ESort,
+  } as TFilters);
 
   useEffect(() => {
     if (data?.countries) {
-      setCountries(data.countries);
+      setCountries(data?.countries);
 
       const allLanguages: string[] = [];
       const allContinents: string[] = [];
 
-      data?.countries?.forEach((country: Country) => {
+      data?.countries?.forEach((country: TCountry) => {
         // Adding unique languages
-        country.languages.forEach((language: Language) => {
-          if (!allLanguages.includes(language.name)) {
-            allLanguages.push(language.name);
+        country?.languages?.forEach((language: TLanguage) => {
+          if (!allLanguages.includes(language?.name)) {
+            allLanguages.push(language?.name);
           }
         });
 
         // Adding unique continents
         if (
           country?.continent?.name &&
-          !allContinents.includes(country.continent.name)
+          !allContinents?.includes(country?.continent?.name)
         ) {
-          allContinents.push(country.continent.name);
+          allContinents?.push(country?.continent?.name);
         }
       });
 
@@ -72,7 +82,7 @@ export default function Home() {
   };
 
   if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (error) return <p>Error: {error?.message}</p>;
 
   return (
     <div>
@@ -92,7 +102,7 @@ export default function Home() {
         ))}
       </ul>
 
-      {countries.map((country: Country) => (
+      {countries.map((country: TCountry) => (
         <div key={country?.name}>
           <h2>{country?.name}</h2>
           <p>Capital: {country?.capital}</p>
@@ -107,7 +117,7 @@ export default function Home() {
           <h2>More Details</h2>
           <h3>Languages</h3>
           <ul>
-            {country?.languages?.map((language: Language) => (
+            {country?.languages?.map((language: TLanguage) => (
               <li key={language?.name}>{language?.name}</li>
             ))}
           </ul>

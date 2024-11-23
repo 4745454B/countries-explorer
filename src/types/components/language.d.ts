@@ -1,3 +1,3 @@
-export type Language = {
+export type TLanguage = {
   name: string;
 };
