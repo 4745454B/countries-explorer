@@ -1,5 +1,13 @@
+/**
+ * Imports
+ */
 import { useEffect, useState } from "react";
 import { useQuery, gql } from "@apollo/client";
+
+/**
+ * Types
+ */
+import { Country, Language } from "../../types";
 
 const GET_COUNTRIES = gql`
   query GetCountries {
@@ -22,7 +30,7 @@ const GET_COUNTRIES = gql`
 
 export default function Home() {
   const { loading, error, data } = useQuery(GET_COUNTRIES);
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState([] as Country[]);
   const [languages, setLanguages] = useState([] as string[]);
   const [continents, setContinents] = useState([] as string[]);
 
@@ -33,9 +41,9 @@ export default function Home() {
       const allLanguages: string[] = [];
       const allContinents: string[] = [];
 
-      data.countries.forEach((country: any) => {
+      data?.countries?.forEach((country: Country) => {
         // Adding unique languages
-        country.languages.forEach((language: any) => {
+        country.languages.forEach((language: Language) => {
           if (!allLanguages.includes(language.name)) {
             allLanguages.push(language.name);
           }
@@ -43,7 +51,7 @@ export default function Home() {
 
         // Adding unique continents
         if (
-          country.continent?.name &&
+          country?.continent?.name &&
           !allContinents.includes(country.continent.name)
         ) {
           allContinents.push(country.continent.name);
@@ -84,11 +92,11 @@ export default function Home() {
         ))}
       </ul>
 
-      {countries.map((country: any) => (
+      {countries.map((country: Country) => (
         <div key={country?.name}>
           <h2>{country?.name}</h2>
           <p>Capital: {country?.capital}</p>
-          <p>Continent: {country?.continent.name}</p>
+          <p>Continent: {country?.continent?.name}</p>
           {country?.code && (
             <img
               src={`https://flagcdn.com/w320/${country?.code?.toLowerCase()}.png`}
@@ -99,7 +107,7 @@ export default function Home() {
           <h2>More Details</h2>
           <h3>Languages</h3>
           <ul>
-            {country?.languages?.map((language: any) => (
+            {country?.languages?.map((language: Language) => (
               <li key={language?.name}>{language?.name}</li>
             ))}
           </ul>
