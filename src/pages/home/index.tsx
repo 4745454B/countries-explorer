@@ -164,7 +164,7 @@ export default function Home() {
     <div>
       <input type="text" onChange={handleSearchChange} />
 
-      <select onChange={handleSortChange} defaultValue={filters.sort}>
+      <select value={filters.sort} onChange={handleSortChange}>
         {SORT.map((sort: any, index: number) => (
           <option key={`${sort}_${index}`} value={sort?.value}>
             {sort.label}
@@ -172,8 +172,11 @@ export default function Home() {
         ))}
       </select>
 
-      <select onChange={handleContinentChange}>
-        <option value="default">Default</option>
+      <select
+        value={filters.continent || "default"}
+        onChange={handleContinentChange}
+      >
+        <option value="default">Continent</option>
         {continents.map((continent: string) => (
           <option key={continent} value={continent}>
             {continent}
@@ -181,8 +184,11 @@ export default function Home() {
         ))}
       </select>
 
-      <select onChange={handleLanguageChange}>
-        <option value="default">Default</option>
+      <select
+        value={filters.language || "default"}
+        onChange={handleLanguageChange}
+      >
+        <option value="default">Language</option>
         {languages.map((language: string) => (
           <option key={language} value={language}>
             {language}
