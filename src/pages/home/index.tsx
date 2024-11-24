@@ -14,6 +14,11 @@ import { TCountry, TLanguage, TFilters } from "../../types";
  */
 import { ESort } from "../../enums";
 
+/**
+ * Constants
+ */
+import { SORT } from "../../constants";
+
 const GET_COUNTRIES = gql`
   query GetCountries {
     countries {
@@ -33,20 +38,25 @@ const GET_COUNTRIES = gql`
   }
 `;
 
+const INITIAL_FILTERS = {
+  continent: "" as string,
+  language: "" as string,
+  sort: ESort.NAME as ESort,
+} as TFilters;
+
 export default function Home() {
   const { loading, error, data } = useQuery(GET_COUNTRIES);
   const [countries, setCountries] = useState([] as TCountry[]);
   const [languages, setLanguages] = useState([] as string[]);
   const [continents, setContinents] = useState([] as string[]);
-  const [filters, setFilters] = useState({
-    continent: "" as string,
-    language: "" as string,
-    sort: ESort.DEFAULT as ESort,
-  } as TFilters);
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
 
   useEffect(() => {
     if (data?.countries) {
-      setCountries(data?.countries);
+      const sortedCountries = [...data?.countries].sort(
+        (a: TCountry, b: TCountry) => a?.name?.localeCompare(b?.name)
+      );
+      setCountries(sortedCountries);
 
       const allLanguages: string[] = [];
       const allContinents: string[] = [];
@@ -73,12 +83,78 @@ export default function Home() {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (countries.length === 0) return;
+    if (!data?.countries) return;
+
+    console.log("filters", filters);
+
+    let sortedCountries = [...countries];
+
+    switch (filters.sort) {
+      case ESort.NAME:
+        sortedCountries.sort((a: TCountry, b: TCountry) =>
+          a.name.localeCompare(b.name)
+        );
+        break;
+      case ESort.CONTINENT:
+        sortedCountries.sort((a: TCountry, b: TCountry) =>
+          a.continent?.name.localeCompare(b.continent?.name)
+        );
+        break;
+    }
+
+    setCountries(sortedCountries);
+  }, [filters.sort]);
+
+  useEffect(() => {
+    if (!data?.countries) return;
+    let filteredCountries = [...data?.countries];
+
+    if (filters.language && filters.language !== "default") {
+      filteredCountries = filteredCountries.filter((country: TCountry) =>
+        country.languages.some(
+          (lang: TLanguage) => lang.name === filters.language
+        )
+      );
+    }
+
+    if (filters.continent && filters.continent !== "default") {
+      filteredCountries = filteredCountries.filter(
+        (country: TCountry) => country.continent?.name === filters.continent
+      );
+    }
+
+    setCountries(filteredCountries);
+  }, [filters.continent, filters.language]);
+
+  /**
+   * Handlers
+   */
   const handleSearchChange = (event: any) => {
     const searchValue = event?.target?.value;
-    const filteredCountries = data?.countries?.filter((country: any) =>
+    const filteredCountries = data?.countries?.filter((country: TCountry) =>
       country?.name?.toLowerCase().includes(searchValue.toLowerCase())
     );
     setCountries(filteredCountries);
+  };
+
+  const handleSortChange = (event: any) => {
+    const sortValue = event?.target?.value;
+    setFilters({ ...filters, sort: sortValue });
+  };
+
+  const handleLanguageChange = (event: any) => {
+    const languageValue = event?.target?.value;
+    setFilters((prevFilters) => ({ ...prevFilters, language: languageValue }));
+  };
+
+  const handleContinentChange = (event: any) => {
+    const continentValue = event?.target?.value;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      continent: continentValue,
+    }));
   };
 
   if (loading) return <p>Loading...</p>;
@@ -88,19 +164,33 @@ export default function Home() {
     <div>
       <input type="text" onChange={handleSearchChange} />
 
-      <h1>All Continents</h1>
-      <ul>
-        {continents.map((continent: string) => (
-          <li key={continent}>{continent}</li>
+      <select onChange={handleSortChange} defaultValue={filters.sort}>
+        {SORT.map((sort: any, index: number) => (
+          <option key={`${sort}_${index}`} value={sort?.value}>
+            {sort.label}
+          </option>
         ))}
-      </ul>
+      </select>
 
-      <h1>All Languages</h1>
-      <ul>
-        {languages.map((language: string) => (
-          <li key={language}>{language}</li>
+      <select onChange={handleContinentChange}>
+        <option value="default">Default</option>
+        {continents.map((continent: string) => (
+          <option key={continent} value={continent}>
+            {continent}
+          </option>
         ))}
-      </ul>
+      </select>
+
+      <select onChange={handleLanguageChange}>
+        <option value="default">Default</option>
+        {languages.map((language: string) => (
+          <option key={language} value={language}>
+            {language}
+          </option>
+        ))}
+      </select>
+
+      <button onClick={() => setFilters(INITIAL_FILTERS)}>Clear</button>
 
       {countries.map((country: TCountry) => (
         <div key={country?.name}>
