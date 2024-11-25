@@ -18,6 +18,7 @@ import { ESort } from "../../enums";
  * Constants
  */
 import { SORT } from "../../constants";
+import countryInfo from "../../data/countryInfo.json";
 
 const GET_COUNTRIES = gql`
   query GetCountries {
@@ -129,6 +130,37 @@ export default function Home() {
   }, [filters.continent, filters.language]);
 
   /**
+   * Functions
+   */
+  const getWeatherData = async (country: TCountry) => {
+    const countryData = countryInfo[country.code as keyof typeof countryInfo];
+
+    if (!countryData) {
+      console.error("Country not found in countryInfo");
+      return;
+    }
+
+    const { latitude, longitude } = countryData;
+
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${
+          import.meta.env.VITE_OPEN_WEATHER_API_KEY as string
+        }`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch weather data");
+      }
+
+      const data = await response.json();
+      console.log("Weather Data", data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  };
+
+  /**
    * Handlers
    */
   const handleSearchChange = (event: any) => {
@@ -220,6 +252,9 @@ export default function Home() {
           <p>Currency: {country?.currency}</p>
           <p>Native: {country?.native}</p>
           <p>Phone Code: +{country?.phone}</p>
+          <button onClick={() => getWeatherData(country)}>
+            Get Weather Data
+          </button>
         </div>
       ))}
     </div>
