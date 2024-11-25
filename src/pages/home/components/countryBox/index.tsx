@@ -1,10 +1,11 @@
 import classes from "./countryBox.module.scss";
-import { TCountry, TLanguage } from "../../../../types";
+import { TCountry, TLanguage, TWeather } from "../../../../types";
 import countryInfo from "../../../../data/countryInfo.json";
 import { useState } from "react";
 
 export default function CountryBox({ country }: { country: TCountry }) {
   const [showMore, setShowMore] = useState(false);
+  const [weatherData, setWeatherData] = useState({} as TWeather);
 
   const getWeatherData = async (country: TCountry) => {
     const countryData = countryInfo[country.code as keyof typeof countryInfo];
@@ -28,6 +29,11 @@ export default function CountryBox({ country }: { country: TCountry }) {
       }
 
       const data = await response.json();
+      setWeatherData({
+        temp: data?.main?.temp,
+        icon: data?.weather[0]?.icon,
+        description: data?.weather[0]?.description,
+      });
       console.log("Weather Data", data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
@@ -40,33 +46,71 @@ export default function CountryBox({ country }: { country: TCountry }) {
     getWeatherData(country);
   };
 
+  const convertKelvinToCelsius = (kelvin: number) => {
+    if (kelvin < 0) return Math.round(0);
+    return Math.round(kelvin - 273.15);
+  };
+
   return (
     <div className={classes.countryBox}>
-      <h2>{country?.name}</h2>
-      <p>Capital: {country?.capital}</p>
-      <p>Continent: {country?.continent?.name}</p>
-      {country?.code && (
-        <img
-          src={`https://flagcdn.com/w320/${country?.code?.toLowerCase()}.png`}
-          alt={`Flag of ${country?.name}`}
-          style={{ width: "50px", height: "30px" }}
-          className={classes.flag}
-        />
-      )}
-      <button onClick={() => onViewMore(country)}>
+      <div className={classes.imageContainer}>
+        {country?.code && (
+          <img
+            src={`https://flagcdn.com/w320/${country?.code?.toLowerCase()}.png`}
+            alt={`Flag of ${country?.name}`}
+            className={classes.flag}
+          />
+        )}
+
+        <div className={classes.detailsContainer}>
+          <div className={classes.details}>
+            <h2>{country?.name}</h2>
+            <p>
+              {country?.capital ? country?.capital + "," : ""}{" "}
+              {country?.continent?.name}
+            </p>
+          </div>
+
+          <div
+            className={`${classes.moreDetails} ${showMore ? classes.show : ""}`}
+          >
+            <ul>
+              {country?.languages?.map((language: TLanguage, index: number) => (
+                <>
+                  <li key={language?.name}>{language?.name}</li>
+                  {index === country?.languages?.length - 1 ? "" : "|"}
+                </>
+              ))}
+            </ul>
+            <p>Currency: {country?.currency}</p>
+            <p>Native: {country?.native}</p>
+            <p>Phone Code: +{country?.phone}</p>
+
+            <div className={classes.weatherContainer}>
+              {weatherData ? (
+                <>
+                  <p>{convertKelvinToCelsius(weatherData?.temp)}°C</p>
+                  <p>{weatherData?.description}</p>
+                  <img
+                    src={`https://openweathermap.org/img/wn/${weatherData?.icon}.png`}
+                    alt={weatherData?.description}
+                    className={classes.weatherIcon}
+                  />
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        onClick={() => onViewMore(country)}
+        className={`${classes.showMoreBtn} primary-btn`}
+      >
         {showMore ? "Show Less" : "Show More"}
       </button>
-      <div className={`${classes.moreDetails} ${showMore ? classes.show : ""}`}>
-        <h3>Languages</h3>
-        <ul>
-          {country?.languages?.map((language: TLanguage) => (
-            <li key={language?.name}>{language?.name}</li>
-          ))}
-        </ul>
-        <p>Currency: {country?.currency}</p>
-        <p>Native: {country?.native}</p>
-        <p>Phone Code: +{country?.phone}</p>
-      </div>
     </div>
   );
 }

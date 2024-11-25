@@ -146,7 +146,7 @@ export default function Home() {
   if (error) return <p>Error: {error?.message}</p>;
 
   return (
-    <div>
+    <div className={classes.container}>
       <input type="text" onChange={handleSearchChange} />
 
       <select value={filters.sort} onChange={handleSortChange}>

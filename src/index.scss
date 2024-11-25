@@ -1,0 +1,38 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  font-size: 1.6rem;
+  margin: 0;
+  padding: 0;
+  background-color: #f0f0f0;
+}
+
+div {
+  margin: 0;
+  padding: 0;
+}
+
+.primary-btn {
+  background-color: #3f4f5e;
+  box-shadow: -2px 2px 10px 1px rgba(0, 0, 0, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: box-shadow 0.3s, background-color 0.3s;
+  will-change: box-shadow, background-color;
+
+  &:hover {
+    background-color: #2f3f4e;
+    box-shadow: -2px 2px 10px 1px rgba(0, 0, 0, 0.3);
+  }
+}
