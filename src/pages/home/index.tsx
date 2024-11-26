@@ -1,5 +1,5 @@
 import classes from "./home.module.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery, gql } from "@apollo/client";
 import CountryBox from "./components/countryBox";
 import { TCountry, TLanguage, TFilters } from "../../types";
@@ -37,6 +37,7 @@ export default function Home() {
   const [languages, setLanguages] = useState([] as string[]);
   const [continents, setContinents] = useState([] as string[]);
   const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (data?.countries) {
@@ -118,10 +119,7 @@ export default function Home() {
    */
   const handleSearchChange = (event: any) => {
     const searchValue = event?.target?.value;
-    const filteredCountries = data?.countries?.filter((country: TCountry) =>
-      country?.name?.toLowerCase().includes(searchValue.toLowerCase())
-    );
-    setCountries(filteredCountries);
+    filterSearch(searchValue);
   };
 
   const handleSortChange = (event: any) => {
@@ -142,6 +140,25 @@ export default function Home() {
     }));
   };
 
+  const handleClear = () => {
+    if (searchRef.current) {
+      searchRef.current.value = "";
+    }
+    setFilters(INITIAL_FILTERS);
+    filterSearch("");
+  };
+
+  /**
+   * Functions
+   */
+
+  const filterSearch = (searchValue: string) => {
+    const filteredCountries = data?.countries?.filter((country: TCountry) =>
+      country?.name?.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setCountries(filteredCountries);
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error?.message}</p>;
 
@@ -150,7 +167,12 @@ export default function Home() {
       <div className={classes.filters}>
         <div className={classes.searchContainer}>
           <img src="/assets/images/icons/icon-search.svg" alt="search icon" />
-          <input type="text" onChange={handleSearchChange} />
+          <input
+            ref={searchRef}
+            type="text"
+            onChange={handleSearchChange}
+            placeholder="Search by country name"
+          />
         </div>
 
         <select
@@ -191,10 +213,7 @@ export default function Home() {
           ))}
         </select>
 
-        <button
-          onClick={() => setFilters(INITIAL_FILTERS)}
-          className="primary-btn lg"
-        >
+        <button onClick={() => handleClear()} className="primary-btn lg">
           Clear
         </button>
       </div>
