@@ -147,41 +147,57 @@ export default function Home() {
 
   return (
     <div className={classes.container}>
-      <input type="text" onChange={handleSearchChange} />
+      <div className={classes.filters}>
+        <div className={classes.searchContainer}>
+          <img src="/assets/images/icons/icon-search.svg" alt="search icon" />
+          <input type="text" onChange={handleSearchChange} />
+        </div>
 
-      <select value={filters.sort} onChange={handleSortChange}>
-        {SORT.map((sort: any, index: number) => (
-          <option key={`${sort}_${index}`} value={sort?.value}>
-            {sort.label}
-          </option>
-        ))}
-      </select>
+        <select
+          className="select lg"
+          value={filters.sort}
+          onChange={handleSortChange}
+        >
+          {SORT.map((sort: any, index: number) => (
+            <option key={`${sort}_${index}`} value={sort?.value}>
+              Sort by {sort.label}
+            </option>
+          ))}
+        </select>
 
-      <select
-        value={filters.continent || "default"}
-        onChange={handleContinentChange}
-      >
-        <option value="default">Continent</option>
-        {continents.map((continent: string) => (
-          <option key={continent} value={continent}>
-            {continent}
-          </option>
-        ))}
-      </select>
+        <select
+          className="select lg"
+          value={filters.continent || "default"}
+          onChange={handleContinentChange}
+        >
+          <option value="default">Continent</option>
+          {continents.map((continent: string) => (
+            <option key={continent} value={continent}>
+              {continent}
+            </option>
+          ))}
+        </select>
 
-      <select
-        value={filters.language || "default"}
-        onChange={handleLanguageChange}
-      >
-        <option value="default">Language</option>
-        {languages.map((language: string) => (
-          <option key={language} value={language}>
-            {language}
-          </option>
-        ))}
-      </select>
+        <select
+          className="select lg"
+          value={filters.language || "default"}
+          onChange={handleLanguageChange}
+        >
+          <option value="default">Language</option>
+          {languages.map((language: string) => (
+            <option key={language} value={language}>
+              {language}
+            </option>
+          ))}
+        </select>
 
-      <button onClick={() => setFilters(INITIAL_FILTERS)}>Clear</button>
+        <button
+          onClick={() => setFilters(INITIAL_FILTERS)}
+          className="primary-btn lg"
+        >
+          Clear
+        </button>
+      </div>
 
       <div className={classes.countriesContainer}>
         {countries.map((country: TCountry) => (

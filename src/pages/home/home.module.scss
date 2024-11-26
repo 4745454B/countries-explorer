@@ -3,6 +3,53 @@
   padding: 2rem;
   width: 100%;
   max-width: 1000px;
+  margin-bottom: 2rem;
+
+  & .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    margin-top: 2rem;
+    gap: 1.25rem;
+
+    @media screen and (max-width: 930px) {
+      flex-direction: column;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    & .searchContainer {
+      position: relative;
+
+      & img {
+        width: 20px;
+        height: 20px;
+        margin-right: 1rem;
+        position: absolute;
+        top: 50%;
+        left: 1rem;
+        transform: translateY(-50%);
+      }
+
+      & input {
+        width: 100%;
+        min-width: 250px;
+        height: 100%;
+        outline: none;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        background-color: white;
+        padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+        transition: box-shadow 0.3s;
+        will-change: box-shadow;
+        min-height: 39px;
+
+        &:hover {
+          box-shadow: -2px 2px 10px 1px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
 
   & .countriesContainer {
     display: flex;
