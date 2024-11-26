@@ -1,50 +1,64 @@
-# React + TypeScript + Vite
+### Architecture and Design
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The application is built using a React and TypeScript framework with Apollo Client for GraphQL integration. It adopts a component-based architecture, ensuring modularity and scalability. The use of SCSS modules provides scoped styling, avoiding conflicts. Key design decisions include managing filtering, sorting, and searching through React state and dynamically fetching unique filters (e.g., continents, languages) from the API response.
 
-Currently, two official plugins are available:
+## Benefits:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### End Users:
 
-## Expanding the ESLint configuration
+- Intuitive UI with responsive interactions for seamless exploration of countries.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Developers:
 
-- Configure the top-level `parserOptions` property like this:
+- Type-safe, modular code simplifies maintenance and future feature additions.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
+### Stakeholders:
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- The architecture supports real-time weather data integration for each country, enhancing the application's value to end users by providing additional contextual information.
+- This design is extendable, allowing for further features, such as analytics or personalized user experiences, to be seamlessly added in the future.
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+### Challenges Faced
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
-```
+#### Data Processing and State Management
+
+- **Challenge**:  
+  Filtering and sorting large datasets dynamically while maintaining optimal performance.
+
+- **Solution**:  
+  Leveraged React's `useState` and `useEffect` hooks to handle state updates and dynamic UI rendering efficiently.
+
+- **Next Steps**:  
+  For a larger project, adopting Redux or another state management library would provide a more robust solution for managing complex state logic and actions.
+
+#### Styling and Responsiveness
+
+- **Challenge**:  
+  Ensuring a consistent, responsive design across different screen sizes.
+
+- **Solution**:  
+  Used SCSS modules with a component-based styling approach for modular and reusable styles.
+
+- **Next Steps**:  
+  Incorporate a utility-first CSS framework like TailwindCSS for more flexible styling and Flowbite React for prebuilt UI components to further streamline responsive design efforts and improve development speed.
+
+#### Weather API Rate Limits
+
+- **Challenge**:  
+  The OpenWeatherMap API has rate limits, potentially impacting user experience during high usage.
+
+- **Solution**:  
+  Added conditional checks to prevent unnecessary API calls (e.g., fetching weather data only when detailed info is expanded).
+
+- **Next Steps**:  
+  Implement caching mechanisms to reduce redundant API calls and improve performance.
+
+### SETUP INSTRUCTIONS
+
+1. Run the command to install the necessary dependencies:
+   ```bash
+   npm install
+   ```
+2. After the installation is complete, run the following command to start the local development server:
+   ```bash
+   npm run dev
+   ```
